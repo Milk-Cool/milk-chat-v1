@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>CHAT</title>
+	</head>
+	<body>
+		<input id="chatid" placeholder="Chat ID">
+		<button onclick="enable()" id="start">Start talking</button>
+		<input id="user" placeholder="User" disabled>
+		<input id="message" placeholder="Message" disabled>
+		<button onclick="send()" id="send" disabled>Send ↓</button>
+		<hr>
+		<iframe id="chat">Oops! The iframe tag is not supported in your browser. What version of HTML are you using?</iframe>
+		<script>
+			function enable(){
+				if(document.getElementById("chatid").value == "") return;
+				var prepare = new XMLHttpRequest();
+				prepare.open("GET", "prepare.php?chatid=" + document.getElementById("chatid").value);
+				prepare.send();
+				document.getElementById("chatid").disabled = "disabled";
+				document.getElementById("start").disabled = "disabled";
+				document.getElementById("user").disabled = "";
+				document.getElementById("message").disabled = "";
+				document.getElementById("send").disabled = "";
+				document.getElementById("chat").src = document.getElementById("chatid").value + ".txt";
+				document.getElementById("chat").onload = function(){
+					document.getElementById("chat").contentWindow.scrollTo(0, 999999999999);
+					document.getElementById("chat").onload = function(){};
+				};
+				setInterval(function(){
+					document.getElementById("chat").contentWindow.location.reload();
+				}, 3000);
+			}
+			function send(){
+				if(document.getElementById("user").value == "" || document.getElementById("message").value == "") return;
+				var msg = new XMLHttpRequest();
+				msg.open("GET", "chat.php?chatid=" + document.getElementById("chatid").value + "&user=" + document.getElementById("user").value + "&message=" + document.getElementById("message").value);
+				msg.send();
+				document.getElementById("message").value = "";
+				document.getElementById("chat").contentWindow.location.reload();
+				document.getElementById("chat").contentWindow.scrollTo(0, 999999999999);
+			}
+			document.getElementById("message").onkeydown = function(e){
+				if(e.which == 13)
+					send();
+			};
+		</script>
+	</body>
+</html>
+
